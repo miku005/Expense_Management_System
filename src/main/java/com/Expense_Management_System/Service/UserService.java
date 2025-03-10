@@ -1,9 +1,11 @@
 package com.Expense_Management_System.Service;
 
 import com.Expense_Management_System.Entity.User;
+import com.Expense_Management_System.Payload.LoginDto;
 import com.Expense_Management_System.Payload.UserDto;
 import com.Expense_Management_System.Repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -51,7 +53,21 @@ public class UserService {
 
     public UserDto registration(UserDto dto) {
         User user = MapToEntity(dto);
+        user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt(10)));
         User save = userRepository.save(user);
         return MapToDto(save);
+    }
+
+    public boolean  login(LoginDto loginDto) {
+        Optional<User> opUser = userRepository.findByUsername(loginDto.getUsername());
+       if (opUser.isPresent()) {
+           User user = opUser.get();
+           if (BCrypt.checkpw(loginDto.getPassword(),user.getPassword())){
+               return true;
+           }else{
+               return false;
+           }
+       }
+       return false;
     }
 }
