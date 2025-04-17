@@ -1,6 +1,7 @@
 package com.Expense_Management_System.Controller;
 
 import com.Expense_Management_System.Entity.User;
+import com.Expense_Management_System.Payload.LoginDto;
 import com.Expense_Management_System.Payload.UserDto;
 import com.Expense_Management_System.Service.UserService;
 import org.springframework.http.HttpStatus;
@@ -30,5 +31,13 @@ public class UserController {
     }
     UserDto savedUser = userService.addUser(dto);
     return new ResponseEntity<>(savedUser,HttpStatus.CREATED);
+}
+@PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody LoginDto loginDto){
+    boolean b = userService.verfiyLogin(loginDto);
+    if (b){
+        return new ResponseEntity<>("Logged in",HttpStatus.OK);
+    }
+    return new ResponseEntity<>("Invalid Email/Password",HttpStatus.INTERNAL_SERVER_ERROR);
 }
 }

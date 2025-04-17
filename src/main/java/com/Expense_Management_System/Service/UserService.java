@@ -1,6 +1,7 @@
 package com.Expense_Management_System.Service;
 
 import com.Expense_Management_System.Entity.User;
+import com.Expense_Management_System.Payload.LoginDto;
 import com.Expense_Management_System.Payload.UserDto;
 import com.Expense_Management_System.Repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -46,5 +47,17 @@ public class UserService {
         user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt(10)));
         User save = userRepository.save(user);
         return MapToDto(save);
+    }
+
+
+    public boolean verfiyLogin(LoginDto loginDto) {
+        Optional<User> byEmail = userRepository.findByEmail(loginDto.getEmail());
+        if (byEmail.isPresent()){
+            User user = byEmail.get();
+            if (BCrypt.checkpw(loginDto.getPassword(),user.getPassword())){
+                return true;
+            }
+        }
+        return false;
     }
 }
