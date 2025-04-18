@@ -8,7 +8,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
     private UserRepository userRepository;
@@ -59,5 +62,39 @@ public class UserService {
             }
         }
         return false;
+    }
+    public void deleteUser(long id) {
+        userRepository.deleteById(id);
+    }
+
+    public UserDto patchUser(long id, UserDto dto) {
+        Optional<User> byId = userRepository.findById(id);
+        User user = byId.get();
+        if (dto.getName() != null) {
+            user.setName(dto.getName());
+        }
+        if (dto.getMobile() != null) {
+            user.setMobile(dto.getMobile());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getPassword() != null) {
+            user.setPassword(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt(10)));
+        }
+        User saved = userRepository.save(user);
+        return MapToDto(saved);
+    }
+
+    public List<UserDto> getuser() {
+        List<User> all = userRepository.findAll();
+        List<UserDto> collect = all.stream().map(e -> MapToDto(e)).collect(Collectors.toList());
+        return collect;
+    }
+
+    public UserDto findUserById(long userId) {
+        Optional<User> byId = userRepository.findById(userId);
+        User user = byId.get();
+        return MapToDto(user);
     }
 }
