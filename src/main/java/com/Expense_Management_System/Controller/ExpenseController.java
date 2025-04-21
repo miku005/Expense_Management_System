@@ -19,12 +19,12 @@ public class ExpenseController {
         ExpenseDto expenseDto1 = expenseService.addExpense(expenseDto);
         return new ResponseEntity<>(expenseDto1, HttpStatus.CREATED);
     }
-    @DeleteMapping
+    @DeleteMapping("/deleteExpense")
     public ResponseEntity<?> deleteExpense(@RequestParam long id){
         expenseService.deleteExpense(id);
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
     }
-    @PutMapping
+    @PutMapping("/updateExpense")
     public ResponseEntity<?> updateExpense(@RequestParam long id, @RequestBody ExpenseDto expenseDto){
         ExpenseDto expenseDto1 = expenseService.updateExpense(id, expenseDto);
         return new ResponseEntity<>(expenseDto1,HttpStatus.OK);

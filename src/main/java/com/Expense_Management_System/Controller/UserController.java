@@ -36,6 +36,22 @@ public class UserController {
     UserDto savedUser = userService.addUser(dto);
     return new ResponseEntity<>(savedUser,HttpStatus.CREATED);
 }
+    @PostMapping("/expense/sign-in")
+    public ResponseEntity<?> createManagerAccount(@Valid @RequestBody UserDto dto, BindingResult result) throws Exception{
+        if (result.hasErrors()){
+            return new ResponseEntity<>(result.getFieldError().getDefaultMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        UserDto byEmail = userService.findByEmail(dto.getEmail());
+        if (byEmail!=null){
+            return new ResponseEntity<>("Email is already exists", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        UserDto byMobile = userService.findByMobile(dto.getMobile());
+        if (byMobile!=null){
+            return new ResponseEntity<>("Mobile Number already exists",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        UserDto savedUser = userService.createManagerAccount(dto);
+        return new ResponseEntity<>(savedUser,HttpStatus.CREATED);
+    }
 @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws Exception{
     String token= userService.verfiyLogin(loginDto);

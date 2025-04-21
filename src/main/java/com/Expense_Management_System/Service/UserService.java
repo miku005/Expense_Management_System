@@ -4,6 +4,7 @@ import com.Expense_Management_System.Entity.User;
 import com.Expense_Management_System.Payload.LoginDto;
 import com.Expense_Management_System.Payload.UserDto;
 import com.Expense_Management_System.Repository.UserRepository;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,14 @@ public class UserService {
     public UserDto addUser(UserDto dto) {
         User user = MapToEntity(dto);
         user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt(10)));
+        user.setRole("ROLE_USER");
+        User save = userRepository.save(user);
+        return MapToDto(save);
+    }
+    public UserDto createManagerAccount(UserDto dto) {
+        User user = MapToEntity(dto);
+        user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt(10)));
+        user.setRole("ROLE_MANAGER");
         User save = userRepository.save(user);
         return MapToDto(save);
     }
@@ -102,4 +111,6 @@ public class UserService {
         User user = byId.get();
         return MapToDto(user);
     }
+
+
 }
