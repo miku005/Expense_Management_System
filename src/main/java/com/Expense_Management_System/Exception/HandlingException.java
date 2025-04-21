@@ -13,12 +13,12 @@ import java.util.Date;
 public class HandlingException {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> globalException(ResourceNotFound e, WebRequest request){
+    public ResponseEntity<?> globalException(Exception e, WebRequest request){
         ExceptionDto exceptionDto = new ExceptionDto(
                 new Date(),
                 e.getMessage(),
                 request.getDescription(false)
         );
-        return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(exceptionDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

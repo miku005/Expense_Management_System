@@ -1,6 +1,6 @@
 package com.Expense_Management_System.Controller;
 
-import com.Expense_Management_System.Entity.User;
+import com.Expense_Management_System.Payload.JwtToken;
 import com.Expense_Management_System.Payload.LoginDto;
 import com.Expense_Management_System.Payload.UserDto;
 import com.Expense_Management_System.Service.UserService;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.*;
 import java.util.List;
 
 @RestController
@@ -39,11 +38,14 @@ public class UserController {
 }
 @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws Exception{
-    boolean b = userService.verfiyLogin(loginDto);
-    if (b){
-        return new ResponseEntity<>("Logged in",HttpStatus.OK);
+    String token= userService.verfiyLogin(loginDto);
+    JwtToken jwtToken = new JwtToken();
+    jwtToken.setToken(token);
+    jwtToken.setType("JWT");
+    if (token!=null){
+        return new ResponseEntity<>(jwtToken,HttpStatus.OK);
     }
-    return new ResponseEntity<>("Invalid Email/Password",HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>("Invalid Email/Password",HttpStatus.UNAUTHORIZED);
 }
 @DeleteMapping
 public ResponseEntity<?> deleteUser(@RequestParam long id) throws Exception{

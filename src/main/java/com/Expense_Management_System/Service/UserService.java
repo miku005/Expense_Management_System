@@ -16,10 +16,12 @@ import java.util.stream.Collectors;
 public class UserService {
     private UserRepository userRepository;
     private ModelMapper modelMapper;
+    private JwtService jwtService;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, JwtService jwtService) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.jwtService = jwtService;
     }
 
     UserDto MapToDto (User user){
@@ -53,15 +55,18 @@ public class UserService {
     }
 
 
-    public boolean verfiyLogin(LoginDto loginDto) {
+    public String verfiyLogin(LoginDto loginDto) {
         Optional<User> byEmail = userRepository.findByEmail(loginDto.getEmail());
         if (byEmail.isPresent()){
             User user = byEmail.get();
             if (BCrypt.checkpw(loginDto.getPassword(),user.getPassword())){
-                return true;
+                String generateToken = jwtService.generateToken(loginDto.getEmail());
+                return generateToken;
+            }else{
+                return null;
             }
         }
-        return false;
+        return null;
     }
     public void deleteUser(long id) {
         userRepository.deleteById(id);
